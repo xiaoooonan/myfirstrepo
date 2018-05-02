@@ -1,0 +1,52 @@
+---
+title: "first time using !!"
+author: "Xiaonan Zhang"
+date: "May 2, 2018"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+library(gapminder)
+
+#Creat a file to store dataset
+if(!file.exists("./gapminder")){dir.create("./gapminder")}
+
+#download files using urls directly to make code reproducible 
+fileUrls <- c(
+  "https://docs.google.com/spreadsheet/pub?key=tSUr_yZVbM6a3AGJEq_Z2Pw&output=xlsx",
+  "https://docs.google.com/spreadsheet/pub?key=0ArfEDsV3bBwCdHBzUVVSMDlTX1ZCUnNJQ3ZFdkFXVFE&output=xlsx",
+  "https://docs.google.com/spreadsheet/pub?key=0AkBd6lyS3EmpdHo5S0J6ekhVOF9QaVhod05QSGV4T3c&output=xlsx"
+)
+
+varNames <- c("alt_GDP","blood_press","GDP")
+#So excited! First time use !! to read characters within this vector
+#I see too many people use for loop to take in vectors
+
+#generate the function to get tidy data frame
+get_cleaned <- function(url_in,var_name){
+  download.file(url_in,destfile = "./gapminder/tmp.xlsx",mode = "wb")
+  output <- readxl::read_excel("./gapminder/tmp.xlsx")
+  names(output)[1] <- "country"
+  output <- gather(output,key = year ,value = !!var_name, -1, na.rm = TRUE)%>%
+    arrange(country)
+  output <- mutate(output,year=as.integer(year))
+}
+
+#Test the function with first dataset link
+out <- get_cleaned(fileUrls[1],varNames[1])
+head(out)
+#Great. Function works
+
+#Use map to apply function to all datasets
+#Personally prefer to avoid loop
+#I also see too many people use for loop here
+
+all_data <- map2(fileUrls, varNames, get_cleaned)
+head(all_data)
+#Cool!
+```
