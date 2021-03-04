@@ -3,4 +3,4 @@ Test Test
 
 Start using github today
 
-I suddenly realized I always pursue coding concisely.
+Aha moment today - I code consicely. And constantly improve them to be more efficient
